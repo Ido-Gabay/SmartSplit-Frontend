@@ -37,7 +37,13 @@ const styles = StyleSheet.create({
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 350,
+        marginTop: 500,
         marginBottom: 10,
+
     },
+    buttonText:{
+        textAlign: "center",
+        fontSize: 20,
+        fontFamily: 'Avenir-HeavyOblique'
+    }
 });

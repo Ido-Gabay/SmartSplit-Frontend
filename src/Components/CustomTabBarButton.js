@@ -69,5 +69,6 @@ const styles = StyleSheet.create({
     svgGapFiller: {
         flex: 1,
         backgroundColor: 'white',
+        
     },
 })

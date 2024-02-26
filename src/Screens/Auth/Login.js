@@ -1,17 +1,52 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Background from '../../Components/BackGround';
+import AuthService from '../../Services/AuthServiceAxios';
 
 const Login = ({ navigation }) => {
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    // Logic to handle login
-    console.log('Email:', email);
-    console.log('Password:', password);
-    navigation.navigate('Home');
-    // You can implement your login logic here
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email.trim()) {
+      console.log('Please enter your email');
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      console.log('Please enter a valid email address');
+      return;
+    }
+
+    // Password validation
+    // At least 8 characters, at least one uppercase letter, one lowercase letter, and one digit
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+    if (!password.trim()) {
+      console.log('Please enter your password');
+      return;
+    }
+
+    if (!passwordRegex.test(password)) {
+      console.log('Password must be at least 8 characters long, and include at least one uppercase letter, one lowercase letter, and one digit');
+      return;
+    }
+
+    AuthService.login(email, password)
+      .then(
+        (response) => {
+          console.log('Login successful');
+          navigation.navigate('Home');  // Updated line
+          // No need for window.location.reload() in React Native
+        },
+        (error) => {
+          console.error('Login error:', error);
+        }
+      );
   };
 
   return (

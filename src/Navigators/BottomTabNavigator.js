@@ -25,7 +25,7 @@ function BottomTabNavigator() {
         tabBarStyle: styles.tabBarStyle,
         tabBarShowLabel: false,
         tabBarActiveTintColor: '#a45aff',
-        tabBarIcon: ({ color, size, focused }) => {
+        tabBarIcon: ({ color, focused }) => {
           let iconName;
           if (route.name === 'Home') {
             iconName = focused ? 'ios-home-sharp' : 'ios-home-outline';
@@ -54,7 +54,7 @@ function BottomTabNavigator() {
         component={Settings}
         options={{
           tabBarLabel: 'Settings',
-          headerShown: true,
+          headerShown: false,
           tabBarButton: props => (
             <CustomTabBarButton route='settings' {...props} />),
           headerLeft: () => {

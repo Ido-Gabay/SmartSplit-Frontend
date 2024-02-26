@@ -1,29 +1,96 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Background from '../../Components/BackGround';
+import axios from 'axios';
 
-const Register = () => {
+const Register = ({ navigation }) => {
+  const apiUrl = 'http://localhost:8080/users';
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [birthday, setBirthday] = useState('');
+  const [age, setAge] = useState('');
   const [secretPass, setSecretPass] = useState('');
 
   const handleRegister = () => {
-    // Logic to handle registration
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log('Confirm Password:', confirmPassword);
-    console.log('First Name:', firstName);
-    console.log('Last Name:', lastName);
-    console.log('Phone Number:', phoneNumber);
-    console.log('Birthday:', birthday);
-    console.log('Secret Password:', secretPass);
-    // You can implement your registration logic here
+
+    // First name validation
+    if (!firstName.trim()) {
+      console.log('Please enter your first name');
+      return;
+    }
+
+    // Last name validation
+    if (!lastName.trim()) {
+      console.log('Please enter your last name');
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email.trim()) {
+      console.log('Please enter your email');
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      console.log('Please enter a valid email address');
+      return;
+    }
+
+    // Password validation
+    // At least 8 characters, at least one uppercase letter, one lowercase letter, and one digit
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+    if (!password.trim()) {
+      console.log('Please enter your password');
+      return;
+    }
+
+    if (!passwordRegex.test(password)) {
+      console.log('Password must be at least 8 characters long, and include at least one uppercase letter, one lowercase letter, and one digit');
+      return;
+    }
+
+    // Age validation between 18 and 120
+    const ageRegex = /^(1[89]|[2-9][0-9]|1[01][0-9]|120)$/;
+
+    if (!age) {
+      console.log('Please enter your age');
+      return;
+    }
+
+    if (!ageRegex.test(age)) {
+      console.log('Age must be between 18 and 120');
+      return;
+    }
+
+    const postData = {
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      password: password,
+      age: age
+    };
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    axios.post(apiUrl, postData, { headers })
+      .then(response => {
+        // Handle the successful response here
+        console.log('Response:', response.data);
+      })
+      .catch(error => {
+        // Handle the error here
+        console.error('Error:', error);
+      });
+    console.log('Registration successful!');
+    // Implement your registration logic here
+    navigation.navigate('Login');
   };
+
 
   return (
     <Background>
@@ -70,32 +137,16 @@ const Register = () => {
             />
           </View>
         </View>
+
         <View style={styles.inputRow}>
           <View style={styles.inputView}>
             <TextInput
               style={styles.inputText}
-              placeholder="Phone Number"
+              placeholder="Age"
               placeholderTextColor="white"
-              onChangeText={(text) => setPhoneNumber(text)}
+              onChangeText={(text) => setAge(text)}
             />
           </View>
-          <View style={styles.inputView}>
-            <TextInput
-              style={styles.inputText}
-              placeholder="Birthday"
-              placeholderTextColor="white"
-              onChangeText={(text) => setBirthday(text)}
-            />
-          </View>
-        </View>
-        <View style={styles.inputView}>
-          <TextInput
-            style={styles.inputText}
-            secureTextEntry
-            placeholder="Secret Password"
-            placeholderTextColor="white"
-            onChangeText={(text) => setSecretPass(text)}
-          />
         </View>
 
         <TouchableOpacity style={styles.loginBtn} onPress={handleRegister}>
