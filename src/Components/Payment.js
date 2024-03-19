@@ -3,8 +3,7 @@ import { StyleSheet, View, Image, TextInput, Text, TouchableOpacity, Alert } fro
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Background from '../Components/BackGround';
-
-const BASE_URL = 'http://localhost:8080';
+import { API_URL } from '../Utils/confing'
 
 const Payment = ({ navigation }) => {
     const [paymentAmount, setPaymentAmount] = useState('');
@@ -23,7 +22,7 @@ const Payment = ({ navigation }) => {
 
             try {
                 // Make a POST request to create a new payment
-                const response = await axios.post(`${BASE_URL}/payments/${groupId}`, paymentData);
+                const response = await axios.post(`${API_URL}/payments/${groupId}`, paymentData);
 
                 // Check if the payment was successful based on the isPaySuccess property in the response data
                 if (response.data.paySuccess) {

@@ -3,7 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, A
 import Background from '../Components/BackGround';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import { useNavigation } from '@react-navigation/native';
+import { API_URL } from '../Utils/confing';
 
 const cardChip = require('../../assets/chip.png');
 const cardVisa = require('../../assets/visa.png');
@@ -20,7 +21,7 @@ const AddCard = () => {
   const [error, setError] = useState('');
 
   const animatedValue = useRef(new Animated.Value(0)).current;
-  const navigation = useNavigation(); // Get navigation object
+  const navigation = useNavigation();
 
   useEffect(() => {
     const getUserIdFromStorage = async () => {
@@ -48,6 +49,34 @@ const AddCard = () => {
     }).start();
   };
 
+  const handleCardNumberChange = (text) => {
+    if (/^\d{0,16}$/.test(text)) {
+      setCardNumbers(text);
+    }
+  };
+
+  const handleCvvChange = (text) => {
+    if (/^\d{0,3}$/.test(text)) {
+      setCvv(text);
+    }
+  };
+
+  const handleDateChange = (text) => {
+    if (/^\d{0,2}(\/\d{0,2})?$/.test(text)) {
+      const [month, year] = text.split('/');
+      setCardMonth(month);
+      setCardYear(year);
+    }
+  };
+
+  const handleCardNameChange = (text) => {
+    // Allow only letters, spaces, and apostrophes for the card name
+    const validCardName = /^[a-zA-Z\s']*$/;
+    if (validCardName.test(text) || text === '') {
+      setCardName(text);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!cardName || !cardNumbers || !cardMonth || !cardYear || !cvv) {
       setError('Please fill in all the fields.');
@@ -55,7 +84,7 @@ const AddCard = () => {
     }
 
     try {
-      const response = await axios.post(`http://localhost:8080/cards/${userId}`, {
+      const response = await axios.post(`${API_URL}/cards/${userId}`, {
         cardName,
         cardNumbers,
         cardMonth,
@@ -63,14 +92,11 @@ const AddCard = () => {
         cvv,
       });
 
-      // Handle success response, e.g., show a success message
       console.log('Card created successfully:', response.data);
-      setError(''); // Clear error if any
+      setError('');
 
-      // Navigate to Wallet screen
       navigation.navigate('Home');
     } catch (error) {
-      // Handle error, e.g., show an error message
       console.error('Error creating card:', error.message);
       setError('Error creating card. Please try again.');
     }
@@ -117,11 +143,8 @@ const AddCard = () => {
         <View style={styles.cardContainer}>
           <Animated.View style={[styles.card, { opacity: cardFrontOpacity }]}>
             <ImageBackground source={require('../../assets/card-background.jpg')} style={styles.cardBackground}>
-              {/* Card Front Content */}
               <ImageBackground source={cardChip} style={styles.chip} resizeMode="contain" />
               <ImageBackground source={getCardTypeImage()} style={styles.cardType} resizeMode="contain" />
-
-              {/* Add other card details like number, name, expiry date */}
               <View style={styles.cardDetails}>
                 <Text style={[styles.creditCardInfo, styles.cardOwnerName]}>
                   {cardName.toUpperCase()}
@@ -138,8 +161,6 @@ const AddCard = () => {
 
           <Animated.View style={[styles.card, styles.cardBack, { opacity: cardBackOpacity }]}>
             <ImageBackground source={require('../../assets/card-background.jpg')} style={styles.cardBackground}>
-              {/* Card Back Content */}
-              {/* Add CVV and other necessary details */}
               <View style={styles.cardCvvContainer}>
                 <View style={styles.blackStrip} />
                 <View style={styles.whiteStrip} />
@@ -151,15 +172,37 @@ const AddCard = () => {
           </Animated.View>
         </View>
 
-        {/* Inputs for card details */}
-        <TextInput style={styles.input} placeholder="Card Number" value={cardNumbers} onChangeText={setCardNumbers} keyboardType="numeric" />
-        <TextInput style={styles.input} placeholder="Card Holder's Name" value={cardName} onChangeText={setCardName} />
-        <TextInput style={styles.input} placeholder="MM/YY" value={`${cardMonth}/${cardYear}`} onChangeText={(text) => {
-          const [month, year] = text.split('/');
-          setCardMonth(month);
-          setCardYear(year);
-        }} />
-        <TextInput style={styles.input} placeholder="CVV" value={cvv} onChangeText={setCvv} keyboardType="numeric" onFocus={() => flipCard()} onBlur={() => flipCard()} />
+        <TextInput
+          style={styles.input}
+          placeholder="Card Number"
+          value={cardNumbers}
+          onChangeText={handleCardNumberChange}
+          keyboardType="numeric"
+          maxLength={16}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Card Holder's Name"
+          value={cardName}
+          onChangeText={handleCardNameChange}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="MM/YY"
+          value={`${cardMonth}/${cardYear}`}
+          onChangeText={handleDateChange}
+          maxLength={5}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="CVV"
+          value={cvv}
+          onChangeText={handleCvvChange}
+          keyboardType="numeric"
+          maxLength={3}
+          onFocus={() => flipCard()}
+          onBlur={() => flipCard()}
+        />
 
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>Submit</Text>
@@ -177,7 +220,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#ddeefc',
   },
   cardContainer: {
     width: '100%',
@@ -195,7 +237,7 @@ const styles = StyleSheet.create({
     bottom: 30,
   },
   cardBack: {
-    backgroundColor: '#fff', // Adjust as needed
+    backgroundColor: '#fff',
   },
   cardBackground: {
     width: '100%',
@@ -220,25 +262,24 @@ const styles = StyleSheet.create({
   cardDetails: {
     flex: 1,
     justifyContent: 'flex-end',
-    alignItems: 'center', // Changed to center
+    alignItems: 'center',
     marginBottom: 20,
     position: 'relative',
   },
   cardNumber: {
     fontSize: 24,
-    bottom: 50, // Adjust the font size as needed
+    bottom: 50,
   },
   cardOwnerName: {
-    fontSize: 18, // Adjust the font size as needed
+    fontSize: 18,
     position: 'absolute',
     left: -20,
   },
   cardExpiry: {
-    fontSize: 18, // Adjust the font size as needed
+    fontSize: 18,
     position: 'absolute',
     right: -20,
   },
-
   input: {
     height: 50,
     width: '100%',
@@ -262,14 +303,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   creditCardInfo: {
-    fontFamily: 'PingFang TC', // Use 'OCR A Std' or another monospaced font
+    fontFamily: 'PingFang TC',
     fontSize: 16,
     color: '#fff',
     marginTop: 10,
   },
   blackStrip: {
     width: 480,
-    height: 45, // Adjust the height as needed
+    height: 45,
     backgroundColor: '#000',
     bottom: 60,
     left: 0,
@@ -278,23 +319,23 @@ const styles = StyleSheet.create({
   },
   cardCvvContainer: {
     position: 'absolute',
-    bottom: 60, // Adjust the position as needed
+    bottom: 60,
   },
   cardCvv: {
-    fontSize: 20, // Adjust the font size as needed
+    fontSize: 20,
     color: 'black',
     left: 350,
     position: 'absolute',
   },
   whiteStrip: {
     width: 370,
-    height: 40, // Adjust the height as needed
+    height: 40,
     backgroundColor: '#fff',
-    borderRadius: 10, // Adjust the border radius as needed
+    borderRadius: 10,
     position: 'absolute',
     top: 5,
     left: 95,
-    transform: [{ translateX: -40 }], // Adjust the translation as needed
+    transform: [{ translateX: -40 }],
   },
   error: {
     color: 'red',

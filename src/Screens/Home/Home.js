@@ -5,6 +5,7 @@ import axios from 'axios';
 import authServiceInstance from "../../Services/AuthServiceHelpers";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
+import { API_URL } from '../../Utils/confing'
 
 export default function Home({ navigation }) {
     const [groups, setGroups] = useState([]);
@@ -16,14 +17,14 @@ export default function Home({ navigation }) {
             const currentUser = await authServiceInstance.getCurrentUser();
     
             if (currentUser?.email) {
-                const response = await axios.get(`http://localhost:8080/users/email/${currentUser.email}`);
+                const response = await axios.get(`${API_URL}/users/email/${currentUser.email}`);
                 const userId = response.data; // Assuming the response is the user ID
     
                 // Save userId to AsyncStorage (stringify the value)
                 await AsyncStorage.setItem('userId', JSON.stringify(userId));
     
                 // Now you can use userId in your logic, for example, fetching user groups
-                const groupResponse = await axios.get(`http://localhost:8080/groups/user/${userId}`);
+                const groupResponse = await axios.get(`${API_URL}/groups/user/${userId}`);
                 setGroups(groupResponse.data);
     
                 // Remove the following line to prevent automatic navigation to Wallet
@@ -39,12 +40,12 @@ export default function Home({ navigation }) {
             // Fetch user details
             const currentUser = await authServiceInstance.getCurrentUser();
             if (currentUser?.email) {
-                const response = await axios.get(`http://localhost:8080/users/email/${currentUser.email}`);
+                const response = await axios.get(`${API_URL}/users/email/${currentUser.email}`);
                 const userId = response.data;
 
                 await AsyncStorage.setItem('userId', JSON.stringify(userId));
 
-                const groupResponse = await axios.get(`http://localhost:8080/groups/user/${userId}`);
+                const groupResponse = await axios.get(`${API_URL}/groups/user/${userId}`);
                 setGroups(groupResponse.data);
             }
         } catch (error) {

@@ -6,12 +6,11 @@ import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { CheckBox } from 'react-native-elements';
-
-const BASE_URL = 'http://localhost:8080';
+import { API_URL } from '../../Utils/confing'
 
 const fetchUserCards = async (userId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/cards/user/${userId}`);
+    const response = await axios.get(`${API_URL}/cards/user/${userId}`);
     return response.data;
   } catch (error) {
     throw error;
@@ -57,7 +56,7 @@ const Wallet = ({ navigation }) => {
   }, [dataLoaded, userCards, navigation]);
 
   const handleCheckboxChange = (cardId) => {
-    setDefaultCardId(cardId === defaultCardId ? null : cardId);
+    setDefaultCardId(cardId);
   };
 
   const handleAddCardPress = () => {
@@ -69,9 +68,13 @@ const Wallet = ({ navigation }) => {
       const storedUserId = await AsyncStorage.getItem('userId');
 
       if (storedUserId && defaultCardId) {
-        await axios.put(`${BASE_URL}/users/setDefaultCard/${JSON.parse(storedUserId)}/${defaultCardId}`);
-        // Set dataLoaded to false before fetching data to trigger a refresh
-        setDataLoaded(false);
+        // Update local state first
+        setDefaultCardId(defaultCardId);
+
+        // Then, update the default card for the user in the database
+        await axios.put(`${API_URL}/users/setDefaultCard/${JSON.parse(storedUserId)}/${defaultCardId}`);
+
+        // Trigger a refresh after updating the default card
         fetchData();
       }
     } catch (error) {
@@ -101,12 +104,11 @@ const Wallet = ({ navigation }) => {
         source={require('../../../assets/logo.png')}
         style={{ width: 120, height: 120, top: 35, left: 20 }}
       />
-      <Text style={styles.Text}>Wallet</Text>
+      <Text style={styles.heading}>My Wallet</Text>
       <View style={styles.container}>
         {userCards.map((card) => (
           <View key={card.id} style={styles.cardContainer}>
             <CheckBox
-              title="Default Card"
               checked={card.id === defaultCardId}
               onPress={() => handleCheckboxChange(card.id)}
               containerStyle={styles.checkBoxContainer}
@@ -118,18 +120,19 @@ const Wallet = ({ navigation }) => {
             />
           </View>
         ))}
-
-        {/* Add a centered bottom button with white background and "Add Card +" text */}
-        <TouchableOpacity style={styles.addButton} onPress={handleAddCardPress}>
-          <Text style={styles.buttonText}>Add Card <MaterialIcons name="add" size={20} color="black" /></Text>
-        </TouchableOpacity>
-
-        {/* Add a centered bottom button with white background and "Set Default Card" text */}
-        {defaultCardId && (
-          <TouchableOpacity style={styles.saveButton} onPress={handleSaveDefaultCard}>
-            <Text style={styles.buttonText}>Set Default Card</Text>
+        <View>
+          {/* Add a centered bottom button with white background and "Add Card +" text */}
+          <TouchableOpacity style={styles.addButton} onPress={handleAddCardPress}>
+            <Text style={styles.buttonText}>Add Card <MaterialIcons name="add" size={20} color="black" /></Text>
           </TouchableOpacity>
-        )}
+          </View>
+          {/* Add a centered bottom button with white background and "Set Default Card" text */}
+          {defaultCardId && (
+            <TouchableOpacity style={styles.saveButton} onPress={handleSaveDefaultCard}>
+              <Text style={styles.buttonText}>Apply Changes</Text>
+            </TouchableOpacity>
+          )}
+        
       </View>
     </Background>
   );
@@ -138,67 +141,66 @@ const Wallet = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 100,
+    marginTop: 90,
     left: 120,
     alignItems: 'center',
   },
   cardContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 10,
-    right: 100
+    right: 60
   },
   cardNumber: {
-    fontSize: 18,
+    fontSize: 24,
     marginRight: 10,
+    fontFamily: "AppleSDGothicNeo-Regular",
+    top: 6,
   },
   cardImage: {
-    width: 60,
-    height: 40,
+    width: 100,
+    height: 80,
   },
-  Text: {
-    textAlign: "center",
-    fontSize: 40,
+  heading: {
+    fontSize: 24,
     top: 70,
-    fontFamily: 'Avenir-HeavyOblique'
+    textAlign:'center',
+    fontFamily: 'Avenir-HeavyOblique',
   },
   addButton: {
-    position: 'absolute',
-    bottom: 200,
     backgroundColor: 'white',
     padding: 15,
-    borderRadius: 15,
-    left: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    elevation: 5,
+    borderRadius: 10,
+    marginTop: 70,
     shadowColor: 'black',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
     shadowRadius: 3,
+    elevation: 5,
+    right: 120,
+    width: 350
   },
   saveButton: {
     position: 'absolute',
-    bottom: 280,
     backgroundColor: 'white',
     padding: 15,
     borderRadius: 15,
-    left: 0,
+    left: 17,
     flexDirection: 'row',
     alignItems: 'center',
     elevation: 5,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 1,
+    shadowOpacity: 0.5,
     shadowRadius: 3,
+    bottom : 150
   },
   buttonText: {
-    color: 'black',
     fontSize: 18,
-    marginRight: 5,
+    textAlign: 'center',
+    fontFamily: 'AppleSDGothicNeo-Bold',
   },
   checkBoxContainer: {
-    right: 60,
+    right: 120,
   },
 });
 

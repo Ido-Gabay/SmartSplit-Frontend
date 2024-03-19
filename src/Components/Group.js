@@ -4,8 +4,7 @@ import Background from "../Components/BackGround";
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-
-const BASE_URL = 'http://localhost:8080';
+import { API_URL } from '../Utils/confing'
 
 const CustomButton = ({ onPress }) => {
   const [isPressed, setIsPressed] = useState(false);
@@ -57,7 +56,7 @@ const Group = () => {
       const selectedGroupId = await AsyncStorage.getItem('selectedGroupId');
 
       if (selectedGroupId) {
-        const response = await axios.get(`${BASE_URL}/groups/${selectedGroupId}`);
+        const response = await axios.get(`${API_URL}/groups/${selectedGroupId}`);
         setGroup(response.data);
       } else {
         console.error("Selected group ID not found in AsyncStorage");
@@ -72,7 +71,7 @@ const Group = () => {
       const selectedGroupId = await AsyncStorage.getItem('selectedGroupId');
 
       if (selectedGroupId) {
-        const response = await axios.get(`${BASE_URL}/payments/group/${selectedGroupId}`);
+        const response = await axios.get(`${API_URL}/payments/group/${selectedGroupId}`);
         setPayments(response.data);
       } else {
         console.error("Selected group ID not found in AsyncStorage");
@@ -101,7 +100,6 @@ const Group = () => {
             source={require('../../assets/chip.png')}
             style={styles.chipImage}
           />
-          {/* Add other card details if needed */}
         </ImageBackground>
       </View>
       <View style={styles.container}>
@@ -111,7 +109,6 @@ const Group = () => {
             <Text style={styles.openDate}>{group.openDate}</Text>
             <Text style={styles.purpose}>{group.purpose}</Text>
             <Text style={styles.moneyAmount}>{`${group.moneyAmount} ₪`}</Text>
-            {/* Add more details as needed */}
           </View>
         ) : (
           <Text>No group details available.</Text>
@@ -186,7 +183,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     cardImage: {
-        width: 390,
+        width: 370,
         height: 200, // Adjust the height as needed
         borderRadius: 10, // Adjust the border radius as needed
         overflow: 'hidden',

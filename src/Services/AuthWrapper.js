@@ -4,8 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import AuthService from '../Services/AuthServiceAxios';
 import AuthServiceHelpers from "../Services/AuthServiceHelpers";
 import axios from "axios";
-
-const API_URL = 'http://localhost:8080';
+import { API_URL } from '../Utils/confing';
 
 const logout = () => {
     AuthService.logout(); // Logout the user

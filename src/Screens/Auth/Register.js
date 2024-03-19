@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Background from '../../Components/BackGround';
 import axios from 'axios';
+import { API_URL } from '../../Utils/confing';
 
 const Register = ({ navigation }) => {
-  const apiUrl = 'http://localhost:8080/users';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [age, setAge] = useState('');
-  const [secretPass, setSecretPass] = useState('');
+  const [gender, setGender] = useState('');
 
   const handleRegister = () => {
 
@@ -66,31 +66,44 @@ const Register = ({ navigation }) => {
       console.log('Age must be between 18 and 120');
       return;
     }
+    if (!gender.trim()) {
+      console.log('Please enter your gender');
+      return;
+    }
+  
+    const genderRegex = /^[MF]$/;
+  
+    if (!genderRegex.test(gender)) {
+      console.log('Gender must be either "M" or "F"');
+      return;
+    }
 
     const postData = {
       firstName: firstName,
       lastName: lastName,
       email: email,
       password: password,
-      age: age
+      age: age,
+      gender: gender
     };
+  
     const headers = {
       'Content-Type': 'application/json',
     };
-    axios.post(apiUrl, postData, { headers })
+  
+    // Make sure to append the specific endpoint (/register) to the API_URL
+    axios.post(`${API_URL}/users`, postData, { headers })
       .then(response => {
         // Handle the successful response here
         console.log('Response:', response.data);
+        console.log('Registration successful!');
+        navigation.navigate('Login');
       })
       .catch(error => {
         // Handle the error here
         console.error('Error:', error);
       });
-    console.log('Registration successful!');
-    // Implement your registration logic here
-    navigation.navigate('Login');
-  };
-
+    }
 
   return (
     <Background>
@@ -147,7 +160,17 @@ const Register = ({ navigation }) => {
               onChangeText={(text) => setAge(text)}
             />
           </View>
+          <View style={styles.inputView}>
+            <TextInput
+              style={styles.inputText}
+              placeholder="Gender"
+              placeholderTextColor="white"
+              onChangeText={(text) => setGender(text)}
+            />
+          </View>
         </View>
+
+        
 
         <TouchableOpacity style={styles.loginBtn} onPress={handleRegister}>
           <Text style={styles.loginText}>REGISTER</Text>

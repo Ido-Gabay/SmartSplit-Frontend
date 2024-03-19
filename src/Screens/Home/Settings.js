@@ -31,9 +31,9 @@ const styles = StyleSheet.create({
         top: 70,
     },
     button: {
-        width: '60%',
+        width: '90%',
         backgroundColor: 'white',
-        borderRadius: 25,
+        borderRadius: 15,
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
@@ -44,6 +44,6 @@ const styles = StyleSheet.create({
     buttonText:{
         textAlign: "center",
         fontSize: 20,
-        fontFamily: 'Avenir-HeavyOblique'
+        fontFamily: 'AppleSDGothicNeo-Bold'
     }
 });

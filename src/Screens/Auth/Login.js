@@ -77,10 +77,6 @@ const Login = ({ navigation }) => {
         <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
           <Text style={styles.loginText}>LOGIN</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('ForgotPassword')}>
-          <Text style={styles.forgotPassText}>Forgot Password?</Text>
-        </TouchableOpacity>
 
       </View>
 
@@ -118,9 +114,11 @@ const styles = StyleSheet.create({
   loginContinueTxt: {
     fontSize: 25,
     textAlign: 'center',
+    fontFamily: 'AppleSDGothicNeo-Bold',
     color: 'black',
-    marginBottom: 22,
+    marginBottom: 30,
     fontWeight: 'bold',
+    marginTop:20,
   },
   loginBtn: {
     width: '80%',
@@ -141,10 +139,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 15,
   },
-
   footer: {
-    bottom: 30,
+    bottom: '58%',
     justifyContent: 'center',
+    textAlign:'center',
     flexDirection: 'row',
   },
   footerText: {

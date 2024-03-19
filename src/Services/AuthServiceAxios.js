@@ -3,8 +3,7 @@ import { jwtDecode } from "jwt-decode"; // Correct import statement
 import "core-js/stable/atob";
 import authServiceHelpers from "./AuthServiceHelpers";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const API_URL = 'http://localhost:8080';
+import { API_URL } from '../Utils/confing'
 
 class AuthServiceAxios {
     async login(email, password) {

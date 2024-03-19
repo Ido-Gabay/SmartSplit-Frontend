@@ -2,8 +2,7 @@ import axios from 'axios';
 import AuthService from '../Services/AuthServiceAxios';
 import AuthServiceHelpers from "../Services/AuthServiceHelpers";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const API_URL = 'http://localhost:8080';
+import { API_URL } from './confing';
 
 let refreshTokenInterval = null;
 
